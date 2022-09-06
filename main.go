@@ -8,7 +8,7 @@ func main() {
     p("App", version(), "started at", config.Address)
 
     mux := http.NewServeMux()
-    mux.HandleFunc("/test", test)
+    mux.HandleFunc("/test", handleInterceptor(test))
 
     server := &http.Server{
         Addr: config.Address,

@@ -5,6 +5,8 @@ import (
     "log"
     "encoding/json"
     "os"
+    "time"
+    "net/http"
 )
 
 type Configuration struct {
@@ -45,6 +47,13 @@ func loadConfig() {
 }
 
 
+//拦截器返回一个函数供调用，在这个函数里添加自己的逻辑判断即可 h(w,r)及是调用用户自己的处理函数。h 是函数指针
+func handleInterceptor(h http.HandlerFunc) http.HandlerFunc {
+    return func(w http.ResponseWriter, r *http.Request) {
+        fmt.Printf("[%s] \"%s %s %s\" %d [%s]\n", time.Now().Format("2006-01-02 15:04:05"), r.Method, r.URL.Path, r.Proto, r.ContentLength, r.RemoteAddr)
+        h(w, r)
+    }
+}
 
 // for logging
 func info(args ...interface{}) {
