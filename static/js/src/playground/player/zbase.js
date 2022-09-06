@@ -11,6 +11,14 @@ class Player extends AcGameObject {
         // vx, vy:速度
         this.vx = 0;
         this.vy = 0;
+
+        //被击中伤害后的速度等参数
+        this.damage_x = 0;
+        this.damage_y = 0;
+        this.damage_speed = 0;
+        //被击中后的摩擦力
+        this.friction = 0.9;
+
         this.radius = radius;
         this.color = color;
         this.speed = speed;
@@ -48,7 +56,7 @@ class Player extends AcGameObject {
         let color = "orange";
         let speed = this.playground.height * 0.3;
         let move_length = this.playground.height * 1;
-        new FireBall(this.playground, this, x, y, radius, vx, vy, color, speed, move_length);
+        new FireBall(this.playground, this, x, y, radius, vx, vy, color, speed, move_length, this.playground.height * 0.005);
     }
 
     add_listening_events() { // 鼠标点击事件
@@ -77,6 +85,21 @@ class Player extends AcGameObject {
         });
     }
 
+    // 玩家被火球击中，所有被作用的函数写在对应的类中
+    is_attacked(angle, damage) {
+        //玩家血量[半径]减去伤害值
+        this.radius -= damage;
+        if (this.radius < 5) { // 半径小于5像素认为死亡
+            this.destroy();
+            return false;
+        }
+        this.damage_x = Math.cos(angle);
+        this.damage_y = Math.sin(angle);
+        this.damage_speed = damage * 45;
+        //血量减少，但速度变快
+        this.speed *= 1.25;
+    }
+
     start() {
         if (this.is_me) {
             this.add_listening_events();
@@ -88,23 +111,31 @@ class Player extends AcGameObject {
     }
 
     update() {
-        if (this.move_length < this.eps) {
-            this.move_length = 0;
+        //伤害消失。10表示被撞后速度<=10就不管它了，让其再次随机运动。
+        if (this.damage_speed > 10) {
             this.vx = this.vy = 0;
-
-            if (!this.is_me) { // robot停下来需要继续随机移动
-                let tx = Math.random() * this.playground.width;
-                let ty = Math.random() * this.playground.height;
-                this.move_to(tx, ty);
-            }
+            this.move_length = 0;
+            this.x += this.damage_x * this.damage_speed * this.timedelta / 1000;
+            this.y += this.damage_y * this.damage_speed * this.timedelta / 1000;
+            this.damage_speed *= this.friction;
         } else {
-            // 计算每帧移动距离
-            let moved = Math.min(this.move_length, this.speed * this.timedelta / 1000); // 两点间距与update时间内移动距离的小值，因为可能在update时间内就提前到达终点了
-            this.x += this.vx * moved; // 加上x方向上需要移动的距离即为此次刷新终点
-            this.y += this.vy * moved;
-            this.move_length -= moved; // 更新移动距离直到到达上面的if精度条件->表示到达鼠标终点
-        }
+            if (this.move_length < this.eps) {
+                this.move_length = 0;
+                this.vx = this.vy = 0;
 
+                if (!this.is_me) { // robot停下来需要继续随机移动
+                    let tx = Math.random() * this.playground.width;
+                    let ty = Math.random() * this.playground.height;
+                    this.move_to(tx, ty);
+                }
+            } else {
+                // 计算每帧移动距离
+                let moved = Math.min(this.move_length, this.speed * this.timedelta / 1000); // 两点间距与update时间内移动距离的小值，因为可能在update时间内就提前到达终点了
+                this.x += this.vx * moved; // 加上x方向上需要移动的距离即为此次刷新终点
+                this.y += this.vy * moved;
+                this.move_length -= moved; // 更新移动距离直到到达上面的if精度条件->表示到达鼠标终点
+            }
+        }
         this.render();
     }
 
