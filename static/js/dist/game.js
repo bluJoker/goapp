@@ -82,7 +82,6 @@ class AcGamePlayground {
 class AcGame {
     constructor(id) {
         this.id = id; //传进i来的id为div-id
-        console.log("create game app")
         this.$ac_game = $('#' + id); //jquery根据id找div元素
 
         this.menu = new AcGameMenu(this);
