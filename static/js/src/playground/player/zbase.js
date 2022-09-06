@@ -8,7 +8,7 @@ class Player extends AcGameObject {
 
         this.x = x;
         this.y = y;
-        //vx, vy:速度
+        // vx, vy:速度
         this.vx = 0;
         this.vy = 0;
         this.radius = radius;
@@ -19,6 +19,9 @@ class Player extends AcGameObject {
         // 精度:浮点运算中小于多少算0
         this.eps = 0.1;
         this.move_length = 0;
+
+        //当前选择的技能
+        this.cur_skill = null;
     }
 
     get_dist(x1, y1, x2, y2) { // 两点间欧几里得距离
@@ -30,11 +33,22 @@ class Player extends AcGameObject {
 
     move_to(tx, ty) {
         this.move_length = this.get_dist(this.x, this.y, tx, ty);
-        //求角度 反正切
+        // 求角度 反正切
         let angle = Math.atan2(ty - this.y, tx - this.x);
-        //vx:横方向速度, vy:纵方向速度
+        // vx:横方向速度, vy:纵方向速度
         this.vx = Math.cos(angle);
         this.vy = Math.sin(angle);
+    }
+
+    shoot_fireball(tx, ty) {
+        let x = this.x, y = this.y;
+        let radius = this.playground.height * 0.01;
+        let angle = Math.atan2(ty - this.y, tx - this.x);
+        let vx = Math.cos(angle), vy = Math.sin(angle);
+        let color = "orange";
+        let speed = this.playground.height * 0.3;
+        let move_length = this.playground.height * 1;
+        new FireBall(this.playground, this, x, y, radius, vx, vy, color, speed, move_length);
     }
 
     add_listening_events() { // 鼠标点击事件
@@ -43,9 +57,22 @@ class Player extends AcGameObject {
             return false;
         });
         this.playground.game_map.$canvas.mousedown(function(e) {
-            //3:鼠标右键, 1:左键, 2:滚轮
+            // 3:鼠标右键, 1:左键, 2:滚轮
             if (e.which === 3) {
                 outer.move_to(e.clientX, e.clientY);
+            } else if (e.which === 1) {
+                if (outer.cur_skill === "fireball") { // 当前技能为火球，表示按了q键
+                    outer.shoot_fireball(e.clientX, e.clientY);
+                }
+                outer.cur_skill = null; //点完左键释放掉技能
+            }
+        });
+
+        // 此处获取键盘的事件不能使用canvas:因为canvas不能聚焦？HTML5 Canvas本身不支持键盘事件监听与获取
+        $(window).keydown(function(e) {
+            if (e.which === 81) { // keycode中q键:81
+                outer.cur_skill = "fireball";
+                return false;
             }
         });
     }
