@@ -30,6 +30,8 @@ class Player extends AcGameObject {
 
         //当前选择的技能
         this.cur_skill = null;
+
+        this.spent_time = 0;
     }
 
     get_dist(x1, y1, x2, y2) { // 两点间欧几里得距离
@@ -123,6 +125,15 @@ class Player extends AcGameObject {
     }
 
     update() {
+        //单机模式中其他玩家随机攻击
+        this.spent_time += this.timedelta / 1000;
+        if (!this.is_me && this.spent_time > 4 && Math.random() < 1 / 300.0) { // 每秒刷新60次，概率1/300相当于5s发射一次
+            let player = this.playground.players[Math.floor(Math.random() * this.playground.players.length)]; // 随机向一名玩家发射炮弹
+            let tx = player.x + player.speed * this.vx * this.timedelta / 1000 * 0.3;
+            let ty = player.y + player.speed * this.vy * this.timedelta / 1000 * 0.3;
+            this.shoot_fireball(tx, ty);
+        }
+
         //伤害消失。10表示被撞后速度<=10就不管它了，让其再次随机运动。
         if (this.damage_speed > 10) {
             this.vx = this.vy = 0;
@@ -156,6 +167,14 @@ class Player extends AcGameObject {
         this.ctx.arc(this.x, this.y, this.radius, 0, Math.PI * 2, false);
         this.ctx.fillStyle = this.color;
         this.ctx.fill();
+    }
+
+    on_destroy() {
+        for (let i = 0; i < this.playground.players.length; i++) {
+            if (this.playground.players[i] === this) {
+                this.playground.players.splice(i, 1);
+            }
+        }
     }
 }
 
