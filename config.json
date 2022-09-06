@@ -1,4 +1,4 @@
 {
     "Address" : "0.0.0.0:8087",
-    "Static" : "public"
+    "Static" : "static"
 }

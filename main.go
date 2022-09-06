@@ -8,6 +8,11 @@ func main() {
     p("App", version(), "started at", config.Address)
 
     mux := http.NewServeMux()
+
+    // 指定静态文件解析路径
+    files := http.FileServer(http.Dir(config.Static))
+    mux.Handle("/static/", http.StripPrefix("/static", files))
+
     mux.HandleFunc("/test", handleInterceptor(test))
 
     server := &http.Server{
