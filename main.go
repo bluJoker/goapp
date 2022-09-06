@@ -1,6 +1,7 @@
 package main
 
 import (
+    "goapp/views"
     "net/http"
 )
 
@@ -14,6 +15,10 @@ func main() {
     mux.Handle("/static/", http.StripPrefix("/static", files))
 
     mux.HandleFunc("/test", handleInterceptor(test))
+
+    // urls
+    // defined in views/route_main.go
+    mux.HandleFunc("/", handleInterceptor(views.Index))
 
     server := &http.Server{
         Addr: config.Address,
