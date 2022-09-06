@@ -1,4 +1,4 @@
-class AcGame {
+export class AcGame {
     constructor(id) {
         this.id = id; //传进i来的id为div-id
         this.$ac_game = $('#' + id); //jquery根据id找div元素
