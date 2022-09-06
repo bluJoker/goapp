@@ -80,6 +80,10 @@ class Player extends AcGameObject {
     start() {
         if (this.is_me) {
             this.add_listening_events();
+        } else {
+            let tx = Math.random() * this.playground.width;
+            let ty = Math.random() * this.playground.height;
+            this.move_to(tx, ty);
         }
     }
 
@@ -87,6 +91,12 @@ class Player extends AcGameObject {
         if (this.move_length < this.eps) {
             this.move_length = 0;
             this.vx = this.vy = 0;
+
+            if (!this.is_me) { // robot停下来需要继续随机移动
+                let tx = Math.random() * this.playground.width;
+                let ty = Math.random() * this.playground.height;
+                this.move_to(tx, ty);
+            }
         } else {
             // 计算每帧移动距离
             let moved = Math.min(this.move_length, this.speed * this.timedelta / 1000); // 两点间距与update时间内移动距离的小值，因为可能在update时间内就提前到达终点了
