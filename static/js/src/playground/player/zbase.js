@@ -128,7 +128,13 @@ class Player extends AcGameObject {
         //单机模式中其他玩家随机攻击
         this.spent_time += this.timedelta / 1000;
         if (!this.is_me && this.spent_time > 4 && Math.random() < 1 / 300.0) { // 每秒刷新60次，概率1/300相当于5s发射一次
-            let player = this.playground.players[Math.floor(Math.random() * this.playground.players.length)]; // 随机向一名玩家发射炮弹
+            let players = []
+            for (let i = 0; i < this.playground.players.length; i++) {
+                if (this.playground.players[i] !== this) {
+                    players.push(this.playground.players[i])
+                }
+            }
+            let player = players[Math.floor(Math.random() * players.length)]; // 随机向一名玩家发射炮弹
             let tx = player.x + player.speed * this.vx * this.timedelta / 1000 * 0.3;
             let ty = player.y + player.speed * this.vy * this.timedelta / 1000 * 0.3;
             this.shoot_fireball(tx, ty);
