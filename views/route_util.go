@@ -4,6 +4,8 @@ import (
     "net/http"
     "html/template"
     "fmt"
+    "goapp/models"
+    "errors"
 )
 
 func generateHTML(writer http.ResponseWriter, data interface{}, filenames ...string) {
@@ -21,3 +23,15 @@ func generateHTML(writer http.ResponseWriter, data interface{}, filenames ...str
     templates.ExecuteTemplate(writer, "layout", data)
 }
 
+// Checks if the user is logged in and has a session, if not err is not nil
+func session(writer http.ResponseWriter, request *http.Request) (sess models.Session, err error) {
+    cookie, err := request.Cookie("_cookie")
+    fmt.Println("session: ", cookie, " --- ", err)
+    if err == nil {
+        sess = models.Session{Uuid: cookie.Value}
+        if ok, _ := sess.Check(); !ok {
+            err = errors.New("Invalid session")
+        }
+    }
+    return
+}

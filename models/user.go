@@ -15,6 +15,14 @@ type User struct {
     CreatedAt time.Time
 }
 
+type Session struct {
+    Id        int
+    Uuid      string
+    Email     string
+    UserId    int
+    CreatedAt time.Time
+}
+
 // Create a new user, save user info into the database
 func (user *User) Create() (err error) {
     // Postgres does not automatically return the last insert id, because it would be wrong to assume
@@ -67,5 +75,49 @@ func UserByEmail(email string) (user User, err error) {
 func GetFirstUser() (user User, err error) {
     user = User{}
     err = Db.QueryRow("SELECT id, uuid, name, email, password, photo, created_at FROM users LIMIT 0, 1").Scan(&user.Id, &user.Uuid, &user.Name, &user.Email, &user.Password, &user.Photo, &user.CreatedAt)
+    return
+}
+
+// Create a new session for an existing user
+func (user *User) CreateSession() (session Session, err error) {
+    statement := "insert into sessions (uuid, email, user_id, created_at) values (?, ?, ?, ?)"
+    stmt, err := Db.Prepare(statement)
+    if err != nil {
+        return
+    }
+    defer stmt.Close()
+
+    // w2: 分开来做，先insert
+    res, err := stmt.Exec(createUUID(), user.Email, user.Id, time.Now())
+    if err != nil {
+        fmt.Println(err)
+    }
+
+    id, err := res.LastInsertId() //获取刚插入的自增主键id
+    if err != nil {
+        //danger(err, "Get lastInsertId failed")
+    }
+    session.Id = int(id)
+
+    // use QueryRow to return a row and scan the returned id into the Session struct
+    sqlStr := "select uuid, email, user_id, created_at from sessions where id = ?"
+    row := Db.QueryRow(sqlStr, id)
+    row.Scan(&session.Uuid, &session.Email, &session.UserId, &session.CreatedAt)
+    fmt.Println(session)
+    //err = stmt.QueryRow(createUUID(), user.Email, user.Id, time.Now()).Scan(&session.Id, &session.Uuid, &session.Email, &session.UserId, &session.CreatedAt)
+    return
+}
+
+// Check if session is valid in the database
+func (session *Session) Check() (valid bool, err error) {
+    err = Db.QueryRow("SELECT id, uuid, email, user_id, created_at FROM sessions WHERE uuid = ?", session.Uuid).
+    Scan(&session.Id, &session.Uuid, &session.Email, &session.UserId, &session.CreatedAt)
+    if err != nil {
+        valid = false
+        return
+    }
+    if session.Id != 0 {
+        valid = true
+    }
     return
 }

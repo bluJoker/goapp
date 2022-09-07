@@ -79,7 +79,7 @@
 }
 
 .ac-game-settings-login {
-    height: 41vh;
+    height: 39vh;
     width: 20vw;
     position: relative;
     top: 50%;
@@ -90,7 +90,7 @@
 }
 
 .ac-game-settings-register {
-    height: 49vh;
+    height: 51vh;
     width: 20vw;
     position: relative;
     top: 50%;
@@ -110,17 +110,21 @@
 
 .ac-game-settings-username {
     display: block;
-    height: 7vh;
+    height: 6vh;
 }
 
+.ac-game-settings-email {
+    display: block;
+    height: 6vh;
+}
 .ac-game-settings-password {
     display: block;
-    height: 7vh;
+    height: 6vh;
 }
 
 .ac-game-settings-submit {
     display: block;
-    height: 7vh;
+    height: 6vh;
 }
 
 .ac-game-settings-error-message {

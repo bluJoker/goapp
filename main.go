@@ -20,6 +20,7 @@ func main() {
     // defined in views/route_main.go
     mux.HandleFunc("/", handleInterceptor(views.Index))
     mux.HandleFunc("/settings/getinfo", handleInterceptor(views.GetInfo))
+    mux.HandleFunc("/settings/login", handleInterceptor(views.Authenticate))
 
     server := &http.Server{
         Addr: config.Address,
