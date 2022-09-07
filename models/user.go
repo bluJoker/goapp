@@ -6,13 +6,13 @@ import (
 )
 
 type User struct {
-    Id        int
-    Uuid      string
-    Name      string
-    Email     string
-    Password  string
-    Photo     string
-    CreatedAt time.Time
+    Id        int    `json:"id"`
+    Uuid      string `json:"uuid"`
+    Name      string `json:"name"`
+    Email     string `json:"email"`
+    Password  string `json:"passwd"`
+    Photo     string `json:"photo"`
+    CreatedAt time.Time `json:"createdtime"`
 }
 
 // Create a new user, save user info into the database
@@ -63,3 +63,9 @@ func UserByEmail(email string) (user User, err error) {
     return
 }
 
+// test: get the first user
+func GetFirstUser() (user User, err error) {
+    user = User{}
+    err = Db.QueryRow("SELECT id, uuid, name, email, password, photo, created_at FROM users LIMIT 0, 1").Scan(&user.Id, &user.Uuid, &user.Name, &user.Email, &user.Password, &user.Photo, &user.CreatedAt)
+    return
+}
