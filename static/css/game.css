@@ -90,7 +90,7 @@
 }
 
 .ac-game-settings-register {
-    height: 51vh;
+    height: 57vh;
     width: 20vw;
     position: relative;
     top: 50%;
@@ -117,6 +117,12 @@
     display: block;
     height: 6vh;
 }
+
+.ac-game-settings-photo {
+    display: block;
+    height: 6vh;
+}
+
 .ac-game-settings-password {
     display: block;
     height: 6vh;

@@ -53,6 +53,11 @@ class Settings {
                 <input type="text" placeholder="Email address">
             </div>
         </div>
+        <div class="ac-game-settings-photo">
+            <div class="ac-game-settings-item">
+                <input type="text" placeholder="photo">
+            </div>
+        </div>
         <div class="ac-game-settings-password ac-game-settings-password-first">
             <div class="ac-game-settings-item">
                 <input type="password" placeholder="Password">
@@ -99,6 +104,7 @@ class Settings {
         this.$register = this.$settings.find(".ac-game-settings-register");
         this.$register_username = this.$register.find(".ac-game-settings-username input");
         this.$register_email = this.$register.find(".ac-game-settings-email input");
+        this.$register_photo = this.$register.find(".ac-game-settings-photo input");
         this.$register_password = this.$register.find(".ac-game-settings-password-first input");
         this.$register_password_confirm = this.$register.find(".ac-game-settings-password-second input");
         this.$register_submit = this.$register.find(".ac-game-settings-submit button");
@@ -147,6 +153,9 @@ class Settings {
         this.$register_login.click(function() {
             outer.login();
         });
+        this.$register_submit.click(function() {
+            outer.register_on_remote();
+        });
     }
 
     login_on_remote() {  // 在远程服务器上登录
@@ -191,6 +200,48 @@ class Settings {
                 } else {
                     // 获取用户信息失败，打开登录界面
                     outer.login();
+                }
+            }
+        });
+    }
+
+    logout_on_remote() {  // 在远程服务器上登出
+        $.ajax({
+            url: "http://118.31.14.70:8087/settings/logout",
+            type: "GET",
+            success: function(resp) {
+                if (resp.result === "success") {
+                    location.reload();
+                }
+            }
+        });
+    }
+
+    register_on_remote() {  // 在远程服务器上注册
+        let outer = this;
+        let username = this.$register_username.val();
+        let email = this.$register_email.val();
+        let photo = this.$register_photo.val();
+        let password = this.$register_password.val();
+        let password_confirm = this.$register_password_confirm.val();
+        this.$register_error_message.empty();
+
+        $.ajax({
+            url: "http://118.31.14.70:8087/settings/signup",
+            type: "POST", // 方便调试用GET，此处修改数据库应该用post[安全]
+            data: {
+                username:         username,
+                email:            email,
+                photo:            photo,
+                password:         password,
+                password_confirm: password_confirm,
+            },
+            success: function(resp) {
+                console.log("signup: ", resp)
+                if (resp.result === "success") {
+                    location.reload(); // 刷新页面。因为在views的register中login了，故刷新后可以登陆成功
+                } else {
+                    outer.$register_error_message.html(resp.result);
                 }
             }
         });

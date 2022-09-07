@@ -21,6 +21,8 @@ func main() {
     mux.HandleFunc("/", handleInterceptor(views.Index))
     mux.HandleFunc("/settings/getinfo", handleInterceptor(views.GetInfo))
     mux.HandleFunc("/settings/login", handleInterceptor(views.Authenticate))
+    mux.HandleFunc("/settings/logout", handleInterceptor(views.Logout))
+    mux.HandleFunc("/settings/signup", handleInterceptor(views.SignupAccount))
 
     server := &http.Server{
         Addr: config.Address,

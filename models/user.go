@@ -121,3 +121,16 @@ func (session *Session) Check() (valid bool, err error) {
     }
     return
 }
+
+// Delete session from database
+func (session *Session) DeleteByUUID() (err error) {
+    statement := "delete from sessions where uuid = ?"
+    stmt, err := Db.Prepare(statement)
+    if err != nil {
+        return
+    }
+    defer stmt.Close()
+
+    _, err = stmt.Exec(session.Uuid)
+    return
+}

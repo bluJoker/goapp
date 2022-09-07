@@ -6,7 +6,12 @@ import (
     "fmt"
     "goapp/models"
     "errors"
+    "encoding/json"
 )
+
+type resultCode struct {
+    Result string `json:"result"`
+}
 
 func generateHTML(writer http.ResponseWriter, data interface{}, filenames ...string) {
     var files []string
@@ -33,5 +38,17 @@ func session(writer http.ResponseWriter, request *http.Request) (sess models.Ses
             err = errors.New("Invalid session")
         }
     }
+    return
+}
+
+func JsonResponse(w http.ResponseWriter, str string) {
+    result := resultCode{}
+    result.Result = str
+    output, err := json.MarshalIndent(&result, "", "\t")
+    if err != nil {
+        return
+    }
+    w.Header().Set("Content-Type", "application/json")
+    w.Write(output)
     return
 }
