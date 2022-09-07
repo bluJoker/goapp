@@ -19,7 +19,7 @@ func main() {
     // urls
     // defined in views/route_main.go
     mux.HandleFunc("/", handleInterceptor(views.Index))
-    mux.HandleFunc("/getinfo", handleInterceptor(views.GetInfo))
+    mux.HandleFunc("/settings/getinfo", handleInterceptor(views.GetInfo))
 
     server := &http.Server{
         Addr: config.Address,

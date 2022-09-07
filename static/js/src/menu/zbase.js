@@ -21,6 +21,7 @@ class AcGameMenu {
     </div>
 </div>
     `);//html对象前加$，普通对象不加$
+        this.$menu.hide();
         this.root.$ac_game.append(this.$menu); //向ac_game对象加入该menu页面对象
         this.$single = this.$menu.find('.ac-game-menu-field-item-single'); //class前加. id前加#
         this.$multi = this.$menu.find('.ac-game-menu-field-item-multi'); //class前加. id前加#
