@@ -32,7 +32,7 @@ class AcGamePlayground {
         if (this.game_map) this.game_map.resize();
     }
 
-    show() {  // 打开playground界面
+    show(mode) {  // 打开playground界面
         this.$playground.show();
 
         this.width = this.$playground.width();
@@ -42,11 +42,17 @@ class AcGamePlayground {
         this.resize(); // 界面打开后resize窗口大小
 
         this.players = [];
-        this.players.push(new Player(this, this.width / 2 / this.scale, 0.5, 0.04, "white", 0.2, true));
+        this.players.push(new Player(this, this.width / 2 / this.scale, 0.5, 0.04, "white", 0.2, "me", this.root.settings.username, this.root.settings.photo));
 
-        for (let i = 0; i < 5; i++) {
-            this.players.push(new Player(this, this.width / 2 / this.scale, 0.5, 0.04, this.get_random_color(), 0.2, false));
+        if (mode === "single mode") {
+            for (let i = 0; i < 5; i++) {
+                this.players.push(new Player(this, this.width / 2 / this.scale, 0.5, 0.04, this.get_random_color(), 0.2, "robot"));
+            }
+        } else if (mode === "multi mode") {
+            // TODO:
+            console.log("multi-mode show")
         }
+
     }
 
     hide() {  // 关闭playground界面
