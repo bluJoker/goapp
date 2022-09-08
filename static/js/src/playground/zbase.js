@@ -5,6 +5,7 @@ class AcGamePlayground {
 
         this.hide(); // 一开始显示的是菜单界面, 点击 "单人模式" 才打开游戏界面
 
+        this.root.$ac_game.append(this.$playground);
         this.start();
     }
 
@@ -14,15 +15,31 @@ class AcGamePlayground {
     }
 
     start() {
+        let outer = this;
+        $(window).resize(function() { // 调整窗口大小事件
+            outer.resize();
+        });
+    }
+
+    resize() {
+        this.width = this.$playground.width();
+        this.height = this.$playground.height();
+        let unit = Math.min(this.width / 16, this.height / 9);
+        this.width = unit * 16;
+        this.height = unit * 9;
+        this.scale = this.height; //其他元素随窗口调整的基准
+
+        if (this.game_map) this.game_map.resize();
     }
 
     show() {  // 打开playground界面
         this.$playground.show();
 
-        this.root.$ac_game.append(this.$playground);
         this.width = this.$playground.width();
         this.height = this.$playground.height();
         this.game_map = new GameMap(this);
+
+        this.resize(); // 界面打开后resize窗口大小
 
         this.players = [];
         this.players.push(new Player(this, this.width / 2, this.height / 2, this.height * 0.04, "white", this.height * 0.2, true));
