@@ -1,5 +1,9 @@
 package models
 
+import (
+    "testing"
+)
+
 // test data
 var users = []User{
     {
@@ -22,3 +26,6 @@ func setup() {
     // UserDeleteAll()
 }
 
+func TestRediss(t *testing.T) {
+    rediss()
+}

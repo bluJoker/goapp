@@ -23,6 +23,7 @@ func main() {
     mux.HandleFunc("/settings/login", handleInterceptor(views.Authenticate))
     mux.HandleFunc("/settings/logout", handleInterceptor(views.Logout))
     mux.HandleFunc("/settings/signup", handleInterceptor(views.SignupAccount))
+    mux.HandleFunc("/wss/multiplayer", handleInterceptor(views.WsConnect))
 
     server := &http.Server{
         Addr: config.Address,

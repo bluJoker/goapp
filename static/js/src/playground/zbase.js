@@ -33,6 +33,7 @@ class AcGamePlayground {
     }
 
     show(mode) {  // 打开playground界面
+        let outer = this;
         this.$playground.show();
 
         this.width = this.$playground.width();
@@ -50,9 +51,14 @@ class AcGamePlayground {
             }
         } else if (mode === "multi mode") {
             // TODO:
-            console.log("multi-mode show")
-        }
+            this.mps = new MultiPlayerSocket(this);
+            this.mps.uuid = this.players[0].uuid; //自己肯定最先加入是0号, 将自己的uuid也带在发送给服务器的信息中，服务器能区分自己和其他玩家
 
+            this.mps.ws.onopen = function() {
+                console.log("settings: ", outer.root.settings)
+                outer.mps.send_create_player(outer.root.settings.email, outer.root.settings.photo);
+            };
+        }
     }
 
     hide() {  // 关闭playground界面
